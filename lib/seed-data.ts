@@ -20,9 +20,9 @@ export async function seedDatabase(prisma: PrismaClient) {
   const testHash = await bcrypt.hash(TEST_PASSWORD, 10);
 
   const testAccounts: { email: string; name: string; role: "USER" | "ADMIN" }[] = [
-    { email: "testaccount@rivaldraft.test", name: "Test Player", role: "USER" },
-    { email: "testaccount-player2@rivaldraft.test", name: "Test Player Two", role: "USER" },
-    { email: "testaccount-admin@rivaldraft.test", name: "Test Management", role: "ADMIN" },
+    { email: "testaccount@fantasykings88.test", name: "Test Player", role: "USER" },
+    { email: "testaccount-player2@fantasykings88.test", name: "Test Player Two", role: "USER" },
+    { email: "testaccount-admin@fantasykings88.test", name: "Test Management", role: "ADMIN" },
   ];
 
   for (const acc of testAccounts) {

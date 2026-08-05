@@ -9,6 +9,9 @@
   --lime:#3DDC97;
   --lime-bright:#5CEBAE;
   --amber:#FFB648;
+  --gold:#E3B341;
+  --gold-bright:#F5D77D;
+  --gold-deep:#9C7B1F;
   --red:#FF6B6B;
   --text:#F5F5FA;
   --text-soft:#C7C7DA;
@@ -213,6 +216,46 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
 .float-badge{position:absolute;bottom:-16px;left:-14px;display:flex;align-items:center;gap:8px;background:var(--lime);color:var(--bg);
   font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:12px;box-shadow:0 16px 34px -12px rgba(61,220,151,.6)}
 
+.eyebrow.gold{color:var(--gold-bright);background:rgba(227,179,65,.14);border-color:rgba(227,179,65,.4)}
+.eyebrow svg{flex:none}
+.hero-crown-glow{position:absolute;bottom:-260px;left:-200px;width:560px;height:560px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(227,179,65,.16),transparent 70%);filter:blur(10px);pointer-events:none}
+
+/* hero visual: king card (leaderboard w/ crown) */
+.king-card{background:linear-gradient(160deg,var(--bg-card),var(--bg-alt));border:1px solid rgba(227,179,65,.28);border-radius:var(--r);padding:28px 26px;
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.6),0 0 0 1px rgba(227,179,65,.05) inset;position:relative}
+.kc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.kc-podium{display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-bottom:2px}
+.kc-rank{display:grid;grid-template-columns:26px 1fr auto;align-items:center;gap:10px;padding:12px 14px;font-size:14px;color:var(--text-soft);border-bottom:1px solid var(--line)}
+.kc-rank:last-child{border-bottom:none}
+.kc-num{color:var(--muted);font-weight:700;font-size:13px}
+.kc-name{font-weight:600}
+.kc-pts{text-align:right;font-weight:800;color:#fff}
+.kc-rank-1{background:linear-gradient(90deg,rgba(227,179,65,.16),rgba(227,179,65,.03));font-weight:700}
+.kc-rank-1 .kc-name{color:#fff}
+.kc-rank-1 .kc-pts{color:var(--gold-bright)}
+.kc-crown{color:var(--gold);flex:none}
+
+/* stat strip */
+.stat-strip{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:56px}
+.stat-item{background:var(--bg-card);padding:22px 20px;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
+.stat-val{font-family:var(--font-sora),sans-serif;font-size:26px;font-weight:800;color:#fff}
+.stat-lbl{font-size:12px;color:var(--muted)}
+
+/* sports showcase strip */
+.sports-strip{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sport-icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.sport-icon-card{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:26px 16px;display:flex;flex-direction:column;
+  align-items:center;gap:8px;text-align:center;transition:transform .3s var(--ease),border-color .3s var(--ease)}
+.sport-icon-card:hover{transform:translateY(-4px);border-color:rgba(227,179,65,.4)}
+.sic-emoji{font-size:30px;line-height:1}
+.sic-name{font-weight:700;color:#fff;font-size:14.5px}
+.sic-count{font-size:12px;color:var(--muted)}
+.sport-icon-card-next{border-style:dashed;background:linear-gradient(160deg,rgba(227,179,65,.08),transparent)}
+.sport-icon-card-next .sic-emoji{color:var(--gold-bright);font-weight:800}
+.sport-icon-card-next .sic-name{color:var(--text-soft)}
+
 /* leagues / contest grid */
 .leagues{background:var(--bg-alt);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .sport-tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:34px}
@@ -363,6 +406,8 @@ footer{background:var(--bg);padding:56px 0 30px}
   .how-grid::before{display:none}
   .live-grid{grid-template-columns:1fr}
   .foot-in{grid-template-columns:1fr 1fr;row-gap:36px}
+  .stat-strip{grid-template-columns:repeat(2,1fr)}
+  .sport-icon-grid{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:640px){
   .nav-menu{left:-20px;right:-20px;padding:20px 20px 26px}
@@ -372,6 +417,7 @@ footer{background:var(--bg);padding:56px 0 30px}
   .foot-in{grid-template-columns:1fr}
   .foot-bottom{flex-direction:column;text-align:center}
   .how-grid{grid-template-columns:1fr}
+  .sport-icon-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:640px){
   .wrap{padding:0 20px}

@@ -1,4 +1,4 @@
-# Deploying RivalDraft (Render)
+# Deploying FantasyKings88 (Render)
 
 This app needs a real server (not static hosting) — it has a database, real
 auth, and server actions. Render is a good fit because it supports a
@@ -11,10 +11,13 @@ persistent disk, so the SQLite database survives restarts and redeploys.
 3. Settings:
    - **Build command**: `npm install && npm run build`
    - **Start command**: `npm run start`
-   - **Instance type**: anything with a persistent disk (the free tier does
-     not support disks — Starter, ~$7/mo, is the cheapest that does).
+   - **Instance type**: Free works for a quick demo (see the Free tier note
+     below); Starter (~$7/mo) is the cheapest tier with a persistent disk,
+     Shell access, and no cold-start spin-down.
 
-## 2. Add a persistent disk
+## 2. (Starter tier and above only) Add a persistent disk
+
+Skip this on Free — disks aren't available on that tier.
 
 - **Mount path**: `/data`
 - **Size**: 1 GB is plenty to start.
@@ -23,9 +26,10 @@ persistent disk, so the SQLite database survives restarts and redeploys.
 
 | Key | Value |
 |---|---|
-| `DATABASE_URL` | `file:/data/prod.db` |
+| `DATABASE_URL` | `file:/data/prod.db` on Starter+ with a disk attached. On **Free** (no disk), use `file:./prod.db` instead — the database resets on every redeploy/restart, which is fine for a demo but not for anything longer-lived. |
 | `AUTH_SECRET` | Output of `openssl rand -base64 32` — generate a **new** one, don't reuse the local dev secret |
 | `AUTH_TRUST_HOST` | `true` |
+| `SEED_SECRET` | Output of `openssl rand -hex 16` — only needed if you'll use the `/api/seed` route (see step 5) |
 
 ## 4. Deploy
 
@@ -39,17 +43,29 @@ no manual migration step needed.
 ## 5. Seed the database (one-time, after first successful deploy)
 
 The database starts empty — no sports, players, leagues, or accounts exist
-yet. In Render's dashboard, open the service's **Shell** tab and run:
+yet.
+
+**If your plan includes Shell access** (Starter tier and above), open the
+service's **Shell** tab and run:
 
 ```
 npx prisma db seed
 ```
 
-This creates:
+**On the Free tier** (no Shell access), set a `SEED_SECRET` environment
+variable, then visit this URL once in your browser instead:
+
+```
+https://<your-app>.onrender.com/api/seed?secret=<your SEED_SECRET value>
+```
+
+Either way, this creates:
 - 5 sports (~40 players across them)
 - 5 leagues
-- Demo login: `demo@rivaldraft.test` / `demo1234`
-- Admin login: `admin@rivaldraft.test` / `admin1234`
+- Test player: `testaccount@fantasykings88.test`
+- Test player (second): `testaccount-player2@fantasykings88.test`
+- Test management/admin: `testaccount-admin@fantasykings88.test`
+- Password for all three: `TESTACCOUNT123!@#`
 
 ## Notes
 

@@ -13,7 +13,7 @@ export default async function AppNav() {
         <Link href={user ? "/dashboard" : "/"} className="logo">
           <Logo size={34} />
           <span className="logo-word">
-            Rival<b>Draft</b>
+            Fantasy<b>Kings88</b>
           </span>
         </Link>
 

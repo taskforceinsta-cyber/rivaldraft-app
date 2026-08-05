@@ -37,7 +37,7 @@ export default async function LoginPage({
         <div className="wrap auth-wrap">
           <div className="card auth-card">
             <span className="eyebrow violet">Welcome back</span>
-            <h1>Log in to RivalDraft</h1>
+            <h1>Log in to FantasyKings88</h1>
             <p className="lead auth-lead">Draft, track your leagues, and manage your wallet.</p>
 
             {params.error && (
@@ -60,12 +60,12 @@ export default async function LoginPage({
             </form>
 
             <p className="auth-switch">
-              New to RivalDraft? <Link href="/signup">Create an account</Link>
+              New to FantasyKings88? <Link href="/signup">Create an account</Link>
             </p>
             <p className="auth-demo">
-              Test player: <b>testaccount@rivaldraft.test</b>
+              Test player: <b>testaccount@fantasykings88.test</b>
               <br />
-              Test management: <b>testaccount-admin@rivaldraft.test</b>
+              Test management: <b>testaccount-admin@fantasykings88.test</b>
               <br />
               Password (both): <b>TESTACCOUNT123!@#</b>
             </p>

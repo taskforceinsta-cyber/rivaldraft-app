@@ -23,9 +23,9 @@ const inter = Inter({
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "RivalDraft — Draft Your Rivals. Win The League.",
+  title: "FantasyKings88 — Draft Your Rivals. Win The League.",
   description:
-    "RivalDraft is a season-long fantasy sports league platform. Build your squad, draft against real rivals, and compete for the table all season.",
+    "FantasyKings88 is a season-long fantasy sports league platform. Build your squad, draft against real rivals, and compete for the table all season.",
   icons: { icon: "/favicon.svg" },
 };
 
