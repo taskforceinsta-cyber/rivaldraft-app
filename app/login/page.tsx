@@ -63,7 +63,11 @@ export default async function LoginPage({
               New to RivalDraft? <Link href="/signup">Create an account</Link>
             </p>
             <p className="auth-demo">
-              Demo admin: <b>admin@rivaldraft.test</b> / <b>admin1234</b>
+              Test player: <b>testaccount@rivaldraft.test</b>
+              <br />
+              Test management: <b>testaccount-admin@rivaldraft.test</b>
+              <br />
+              Password (both): <b>TESTACCOUNT123!@#</b>
             </p>
           </div>
         </div>

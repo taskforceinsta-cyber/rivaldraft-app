@@ -17,30 +17,31 @@ async function main() {
   );
   const [football, basketball, esports, cricket, motorsport] = sports;
 
-  const adminHash = await bcrypt.hash("admin1234", 10);
-  await prisma.user.upsert({
-    where: { email: "admin@rivaldraft.test" },
-    update: {},
-    create: {
-      name: "RivalDraft Admin",
-      email: "admin@rivaldraft.test",
-      passwordHash: adminHash,
-      role: "ADMIN",
-      walletCents: 0,
-    },
-  });
+  // Shared test credentials for friends trying this out at every permission
+  // level. Password is the same across all variants; the email prefix
+  // signals which role/persona it logs in as.
+  const TEST_PASSWORD = "TESTACCOUNT123!@#";
+  const testHash = await bcrypt.hash(TEST_PASSWORD, 10);
 
-  const demoHash = await bcrypt.hash("demo1234", 10);
-  await prisma.user.upsert({
-    where: { email: "demo@rivaldraft.test" },
-    update: {},
-    create: {
-      name: "Demo Manager",
-      email: "demo@rivaldraft.test",
-      passwordHash: demoHash,
-      role: "USER",
-    },
-  });
+  const testAccounts: { email: string; name: string; role: "USER" | "ADMIN" }[] = [
+    { email: "testaccount@rivaldraft.test", name: "Test Player", role: "USER" },
+    { email: "testaccount-player2@rivaldraft.test", name: "Test Player Two", role: "USER" },
+    { email: "testaccount-admin@rivaldraft.test", name: "Test Management", role: "ADMIN" },
+  ];
+
+  for (const acc of testAccounts) {
+    await prisma.user.upsert({
+      where: { email: acc.email },
+      update: { passwordHash: testHash, role: acc.role, name: acc.name },
+      create: {
+        name: acc.name,
+        email: acc.email,
+        passwordHash: testHash,
+        role: acc.role,
+        walletCents: acc.role === "ADMIN" ? 0 : 1_000_000,
+      },
+    });
+  }
 
   const footballPlayers = [
     { name: "M. Salah", team: "Liverpool", position: "FWD", salary: 12500, proj: 9.8 },
