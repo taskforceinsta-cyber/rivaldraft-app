@@ -84,6 +84,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
   outline:2px solid var(--violet-bright);outline-offset:3px;border-radius:6px}
 
 .nav-username{font-size:13.5px;color:var(--text-soft);margin-right:2px}
+.nav-menu{display:contents}
+.nav-toggle{display:none}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;z-index:2}
+.burger span{width:22px;height:2px;background:#fff;border-radius:2px;transition:transform .25s var(--ease),opacity .25s var(--ease)}
 
 /* admin */
 .admin-tx-row{display:grid;grid-template-columns:160px 1fr 100px 1fr 190px;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--text-soft)}
@@ -94,10 +98,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
 .admin-user-row:last-child{border-bottom:none}
 .role-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(124,92,255,.14);color:var(--violet-bright)}
 .role-badge.role-admin{background:rgba(255,182,72,.14);color:var(--amber)}
+.admin-league-row{display:grid;grid-template-columns:1fr 130px 100px 120px 160px;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--text-soft)}
+.admin-league-row:last-child{border-bottom:none}
 
 @media(max-width:900px){
   .admin-tx-row,.admin-user-row{grid-template-columns:1fr 1fr;font-size:12.5px}
   .admin-tx-row span:nth-child(4),.admin-user-row span:nth-child(2){display:none}
+  .admin-league-row{grid-template-columns:1fr 90px 60px 130px;font-size:12.5px}
+  .admin-league-row span:nth-child(2){display:none}
 }
 
 /* wallet */
@@ -334,8 +342,20 @@ footer{background:var(--bg);padding:56px 0 30px}
 }
 
 @media(max-width:980px){
-  .navlinks{display:none}
   .nav-username{display:none}
+  .burger{display:flex}
+  .nav-menu{display:none;position:absolute;top:calc(100% + 1px);left:-32px;right:-32px;flex-direction:column;gap:20px;
+    background:var(--bg);border-bottom:1px solid var(--line);padding:22px 32px 28px;box-shadow:0 30px 50px -20px rgba(0,0,0,.65)}
+  .nav-toggle:checked ~ .nav-menu{display:flex}
+  .nav-toggle:checked ~ .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav-toggle:checked ~ .burger span:nth-child(2){opacity:0}
+  .nav-toggle:checked ~ .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .navlinks{display:flex;flex-direction:column;align-items:stretch;gap:2px}
+  .navlinks .link{padding:12px 2px;border-bottom:1px solid var(--line);font-size:15.5px;text-align:center}
+  .navlinks .link:last-child{border-bottom:none}
+  .nav-actions{display:flex;flex-direction:column;gap:10px}
+  .nav-actions .btn{width:100%}
+  .nav-actions .nav-username{display:block;text-align:center;margin-bottom:4px}
   .hero-in{grid-template-columns:1fr}
   .hero-visual{order:-1;max-width:460px}
   .league-grid{grid-template-columns:repeat(2,1fr)}
@@ -345,6 +365,7 @@ footer{background:var(--bg);padding:56px 0 30px}
   .foot-in{grid-template-columns:1fr 1fr;row-gap:36px}
 }
 @media(max-width:640px){
+  .nav-menu{left:-20px;right:-20px;padding:20px 20px 26px}
   .cta-in{text-align:center;justify-content:center}
   .cta-in h2,.cta-in .lead{margin-left:auto;margin-right:auto}
   .cta-actions{justify-content:center}

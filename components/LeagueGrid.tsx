@@ -49,18 +49,24 @@ export default function LeagueGrid({ leagues }: { leagues: LeagueCardData[] }) {
         {visible.map((l) => {
           const pct = Math.min(100, Math.round((l.entryCount / l.maxEntries) * 100));
           const filling = pct >= 70;
+          const isLive = l.status === "LIVE";
+          const isCompleted = l.status === "COMPLETED";
           return (
             <div className="contest-card" key={l.id}>
               <div className="cc-top">
                 <span className="cc-sport">
                   {l.sportEmoji} {l.sportName}
                 </span>
-                <span className={`cc-status ${filling ? "status-hot" : "status-new"}`}>
-                  {filling ? "Filling fast" : "Just opened"}
+                <span
+                  className={`cc-status ${isLive ? "status-live" : filling ? "status-hot" : "status-new"}`}
+                >
+                  {isLive ? "Live now" : isCompleted ? "Completed" : filling ? "Filling fast" : "Just opened"}
                 </span>
               </div>
               <h3 className="cc-title">{l.title}</h3>
-              <p className="cc-meta">{relativeStart(new Date(l.startAt))}</p>
+              <p className="cc-meta">
+                {isLive ? "In progress" : isCompleted ? "Season complete" : relativeStart(new Date(l.startAt))}
+              </p>
               <div className="cc-stats">
                 <div>
                   <span className="cc-label">Entry</span>
@@ -83,9 +89,15 @@ export default function LeagueGrid({ leagues }: { leagues: LeagueCardData[] }) {
                   {l.entryCount} / {l.maxEntries} joined
                 </span>
               </div>
-              <Link href={`/draft/${l.id}`} className="btn btn-primary cc-cta">
-                Join league
-              </Link>
+              {l.status === "UPCOMING" ? (
+                <Link href={`/draft/${l.id}`} className="btn btn-primary cc-cta">
+                  Join league
+                </Link>
+              ) : (
+                <Link href={`/leagues/${l.id}`} className="btn btn-ghost-light cc-cta">
+                  View standings
+                </Link>
+              )}
             </div>
           );
         })}

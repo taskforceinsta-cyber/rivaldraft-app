@@ -54,6 +54,14 @@ export default async function DraftPage({
                 View leaderboard
               </a>
             </div>
+          ) : league.status !== "UPCOMING" ? (
+            <div className="card draft-done">
+              <h3>This league has already started</h3>
+              <p>Drafting closes once a league goes live. Try another upcoming league.</p>
+              <a href="/leagues" className="btn btn-primary">
+                Browse leagues
+              </a>
+            </div>
           ) : (
             <DraftBuilder
               leagueId={league.id}

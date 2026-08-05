@@ -161,6 +161,48 @@ export async function decideWithdrawal(formData: FormData) {
   return { ok: true };
 }
 
+export async function simulateGameweek(formData: FormData) {
+  await requireAdmin();
+
+  const leagueId = String(formData.get("leagueId") || "");
+  const league = await prisma.league.findUnique({
+    where: { id: leagueId },
+    include: { entries: { include: { players: true } } },
+  });
+  if (!league) return { error: "League not found." };
+
+  const players = await prisma.player.findMany({ where: { sportId: league.sportId } });
+
+  await prisma.$transaction([
+    ...players.map((p) => {
+      const swing = (Math.random() - 0.3) * (p.projPoints * 0.6);
+      const nextLive = Math.max(0, p.livePoints + p.projPoints * 0.15 + swing);
+      return prisma.player.update({ where: { id: p.id }, data: { livePoints: nextLive } });
+    }),
+  ]);
+
+  const freshPlayers = await prisma.player.findMany({ where: { sportId: league.sportId } });
+  const pointsById = new Map(freshPlayers.map((p) => [p.id, p.livePoints]));
+
+  await prisma.$transaction([
+    ...league.entries.map((entry) => {
+      const total = entry.players.reduce((sum, ep) => sum + (pointsById.get(ep.playerId) ?? 0), 0);
+      return prisma.entry.update({ where: { id: entry.id }, data: { totalPoints: total } });
+    }),
+    prisma.league.update({
+      where: { id: leagueId },
+      data: { status: league.status === "UPCOMING" ? "LIVE" : league.status },
+    }),
+  ]);
+
+  revalidatePath("/admin");
+  revalidatePath(`/leagues/${leagueId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/leagues");
+  revalidatePath("/");
+  return { ok: true };
+}
+
 export async function requestDeposit(formData: FormData) {
   const session = await auth();
   if (!session || !session.user) redirect("/login");

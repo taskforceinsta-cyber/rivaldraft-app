@@ -39,7 +39,12 @@ export default async function LeagueLeaderboardPage({
         <div className="wrap">
           <div className="sec-head">
             <span className="eyebrow violet">
-              {league.sport.emoji} {league.sport.name} · {relativeStart(league.startAt)}
+              {league.sport.emoji} {league.sport.name} ·{" "}
+              {league.status === "LIVE"
+                ? "Live now"
+                : league.status === "COMPLETED"
+                  ? "Completed"
+                  : relativeStart(league.startAt)}
             </span>
             <h1>{league.title}</h1>
             <p className="lead">
@@ -52,7 +57,7 @@ export default async function LeagueLeaderboardPage({
             <div className="form-success">Squad locked in — good luck out there.</div>
           )}
 
-          {!myEntry && (
+          {!myEntry && league.status === "UPCOMING" && (
             <Link href={`/draft/${league.id}`} className="btn btn-primary" style={{ marginBottom: 28 }}>
               Join this league
             </Link>

@@ -3,15 +3,21 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import AppNav from "@/components/AppNav";
-import { decideWithdrawal } from "@/lib/actions";
+import { decideWithdrawal, simulateGameweek } from "@/lib/actions";
 import { money } from "@/lib/format";
+
+const STATUS_LABEL: Record<string, string> = {
+  UPCOMING: "Upcoming",
+  LIVE: "Live",
+  COMPLETED: "Completed",
+};
 
 export default async function AdminPage() {
   const session = await auth();
   if (!session?.user) redirect("/login?from=/admin");
   if (session.user.role !== "ADMIN") redirect("/dashboard");
 
-  const [userCount, leagueCount, entryCount, pending] = await Promise.all([
+  const [userCount, leagueCount, entryCount, pending, leagues] = await Promise.all([
     prisma.user.count(),
     prisma.league.count(),
     prisma.entry.count(),
@@ -19,6 +25,10 @@ export default async function AdminPage() {
       where: { type: "WITHDRAWAL", status: "PENDING" },
       include: { user: true },
       orderBy: { createdAt: "asc" },
+    }),
+    prisma.league.findMany({
+      include: { sport: true, entries: true },
+      orderBy: { startAt: "asc" },
     }),
   ]);
 
@@ -94,6 +104,47 @@ export default async function AdminPage() {
                       <input type="hidden" name="decision" value="reject" />
                       <button type="submit" className="btn btn-sm btn-danger">
                         Reject
+                      </button>
+                    </form>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <h2 className="dash-sub-h" style={{ marginTop: 44 }}>
+            Leagues — simulate live scoring
+          </h2>
+          <p className="wallet-action-desc" style={{ marginBottom: 18 }}>
+            No live sports feed is wired in — use this to push a round of random scoring so
+            leaderboards move, for demo purposes.
+          </p>
+          <div className="board-panel card" style={{ padding: 0 }}>
+            <div className="tx-list">
+              <div className="admin-league-row admin-tx-head">
+                <span>League</span>
+                <span>Sport</span>
+                <span>Status</span>
+                <span>Entries</span>
+                <span>Action</span>
+              </div>
+              {leagues.map((l) => (
+                <div className="admin-league-row" key={l.id}>
+                  <span>{l.title}</span>
+                  <span className="p-muted">
+                    {l.sport.emoji} {l.sport.name}
+                  </span>
+                  <span>
+                    <span className={`role-badge ${l.status === "LIVE" ? "role-admin" : ""}`}>
+                      {STATUS_LABEL[l.status]}
+                    </span>
+                  </span>
+                  <span>{l.entries.length}</span>
+                  <span>
+                    <form action={simulateGameweek}>
+                      <input type="hidden" name="leagueId" value={l.id} />
+                      <button type="submit" className="btn btn-sm btn-ghost-light" disabled={l.entries.length === 0}>
+                        Simulate gameweek
                       </button>
                     </form>
                   </span>
