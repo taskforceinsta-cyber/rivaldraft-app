@@ -14,6 +14,14 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
+// Every route here reads from the database or a user session — there's no
+// genuinely static content to prerender. Forcing dynamic rendering across
+// the whole app avoids Next.js attempting to statically generate pages at
+// build time (before any database connection exists), which is what broke
+// the Render build: /leagues has no auth() call, so nothing else marked it
+// dynamic, and Next tried to prerender it against an unreachable database.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "RivalDraft — Draft Your Rivals. Win The League.",
   description:
