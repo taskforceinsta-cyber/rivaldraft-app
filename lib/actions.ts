@@ -118,16 +118,16 @@ async function requireAdmin() {
   return session;
 }
 
-export async function decideWithdrawal(formData: FormData) {
+export async function decideWithdrawal(formData: FormData): Promise<void> {
   await requireAdmin();
 
   const txId = String(formData.get("txId") || "");
   const decision = String(formData.get("decision") || "");
-  if (!["approve", "reject"].includes(decision)) return { error: "Invalid decision." };
+  if (!["approve", "reject"].includes(decision)) return;
 
   const tx = await prisma.transaction.findUnique({ where: { id: txId } });
   if (!tx || tx.type !== "WITHDRAWAL" || tx.status !== "PENDING") {
-    return { error: "This request is no longer pending." };
+    return;
   }
 
   if (decision === "approve") {
@@ -138,7 +138,7 @@ export async function decideWithdrawal(formData: FormData) {
         data: { status: "REJECTED", decidedAt: new Date(), note: `${tx.note} — auto-rejected, insufficient balance` },
       });
       revalidatePath("/admin");
-      return { error: "User no longer has sufficient balance — request auto-rejected." };
+      return;
     }
     await prisma.$transaction([
       prisma.user.update({
@@ -158,10 +158,9 @@ export async function decideWithdrawal(formData: FormData) {
   }
 
   revalidatePath("/admin");
-  return { ok: true };
 }
 
-export async function simulateGameweek(formData: FormData) {
+export async function simulateGameweek(formData: FormData): Promise<void> {
   await requireAdmin();
 
   const leagueId = String(formData.get("leagueId") || "");
@@ -169,7 +168,7 @@ export async function simulateGameweek(formData: FormData) {
     where: { id: leagueId },
     include: { entries: { include: { players: true } } },
   });
-  if (!league) return { error: "League not found." };
+  if (!league) return;
 
   const players = await prisma.player.findMany({ where: { sportId: league.sportId } });
 
@@ -200,7 +199,6 @@ export async function simulateGameweek(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/leagues");
   revalidatePath("/");
-  return { ok: true };
 }
 
 export async function requestDeposit(formData: FormData) {
