@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum LeagueStatus {
+  UPCOMING
+  LIVE
+  COMPLETED
+}
+
+enum TxType {
+  DEPOSIT
+  WITHDRAWAL
+  ENTRY_FEE
+  PRIZE_PAYOUT
+}
+
+enum TxStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(USER)
+  walletCents   Int       @default(1000000) // test-money starting balance ($10,000.00)
+  createdAt     DateTime  @default(now())
+
+  entries       Entry[]
+  transactions  Transaction[]
+}
+
+model Sport {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  emoji   String
+
+  players League[]
+  leaguePlayers Player[]
+}
+
+model League {
+  id            String       @id @default(cuid())
+  title         String
+  sportId       String
+  sport         Sport        @relation(fields: [sportId], references: [id])
+  startAt       DateTime
+  entryFeeCents Int
+  salaryCap     Int          @default(100000)
+  maxEntries    Int          @default(1000)
+  status        LeagueStatus @default(UPCOMING)
+  createdAt     DateTime     @default(now())
+
+  entries       Entry[]
+}
+
+model Player {
+  id           String  @id @default(cuid())
+  name         String
+  team         String
+  position     String
+  salary       Int
+  projPoints   Float   @default(0)
+  livePoints   Float   @default(0)
+  sportId      String
+  sport        Sport   @relation(fields: [sportId], references: [id])
+
+  entryPlayers EntryPlayer[]
+}
+
+model Entry {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  leagueId    String
+  league      League   @relation(fields: [leagueId], references: [id])
+  squadName   String
+  totalPoints Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  players     EntryPlayer[]
+
+  @@unique([userId, leagueId])
+}
+
+model EntryPlayer {
+  id       String @id @default(cuid())
+  entryId  String
+  entry    Entry  @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+
+  @@unique([entryId, playerId])
+}
+
+model Transaction {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  type      TxType
+  status    TxStatus  @default(PENDING)
+  amountCents Int
+  note      String?
+  createdAt DateTime  @default(now())
+  decidedAt DateTime?
+  decidedBy String?
+}
