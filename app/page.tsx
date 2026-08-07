@@ -99,6 +99,16 @@ export default async function Home() {
                   <span className="kc-name">You</span>
                   <span className="kc-pts">85</span>
                 </div>
+                <div className="kc-rank">
+                  <span className="kc-num">4</span>
+                  <span className="kc-name">D. Okafor</span>
+                  <span className="kc-pts">81</span>
+                </div>
+                <div className="kc-rank">
+                  <span className="kc-num">5</span>
+                  <span className="kc-name">P. Nowak</span>
+                  <span className="kc-pts">79</span>
+                </div>
               </div>
               <div className="lc-foot">
                 <div className="lc-bar">
