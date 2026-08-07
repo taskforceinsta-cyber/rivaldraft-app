@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import AppNav from "@/components/AppNav";
 import CrownIcon from "@/components/CrownIcon";
-import { money, salaryFmt, relativeStart } from "@/lib/format";
+import { money, salaryFmt, relativeStart, initials } from "@/lib/format";
 
 export default async function LeagueLeaderboardPage({
   params,
@@ -109,36 +109,43 @@ export default async function LeagueLeaderboardPage({
           </div>
 
           {myEntry && (
-            <div className="card squad-preview" style={{ marginTop: 24 }}>
+            <div className="card formation-panel" style={{ marginTop: 24 }}>
               <div className="panel-head">
                 <CrownIcon size={14} className="kc-crown" />
                 <span>Your squad — {myEntry.squadName}</span>
               </div>
-              {squadByPosition.map(([position, group]) => (
-                <div className="squad-pos-group" key={position}>
-                  <span className="squad-pos-label">{position}</span>
-                  <div className="squad-pos-players">
-                    {group.map((ep) => {
-                      const effectivePts = ep.isCaptain
-                        ? ep.player.livePoints * 2
-                        : ep.player.livePoints;
-                      return (
-                        <div className="squad-pick squad-pick-static" key={ep.id}>
-                          <span className="squad-pick-name">{ep.player.name}</span>
-                          <span className="squad-pick-team">{ep.player.team}</span>
-                          {ep.isCaptain && <span className="role-badge-static c">C</span>}
-                          {ep.isViceCaptain && <span className="role-badge-static vc">VC</span>}
-                          <span className="squad-pick-salary">{salaryFmt(ep.player.salary)}</span>
-                          <span className="squad-pick-pts">
-                            {effectivePts.toFixed(1)}
-                            {ep.isCaptain && <span className="pts-x2">&times;2</span>}
-                          </span>
-                        </div>
-                      );
-                    })}
+              <div className="formation-board">
+                {squadByPosition.map(([position, group]) => (
+                  <div className="formation-tier" key={position}>
+                    <span className="formation-tier-label">{position}</span>
+                    <div className="formation-tier-players">
+                      {group.map((ep) => {
+                        const effectivePts = ep.isCaptain
+                          ? ep.player.livePoints * 2
+                          : ep.player.livePoints;
+                        return (
+                          <div className="player-card" key={ep.id}>
+                            <div className="player-card-avatar">{initials(ep.player.name)}</div>
+                            {ep.isCaptain && <span className="player-card-badge c">C</span>}
+                            {ep.isViceCaptain && (
+                              <span className="player-card-badge vc">VC</span>
+                            )}
+                            <span className="player-card-name">{ep.player.name}</span>
+                            <span className="player-card-team">{ep.player.team}</span>
+                            <span className="player-card-salary">
+                              {salaryFmt(ep.player.salary)}
+                            </span>
+                            <span className="player-card-pts">
+                              {effectivePts.toFixed(1)}
+                              {ep.isCaptain && <span className="pts-x2">&times;2</span>}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>

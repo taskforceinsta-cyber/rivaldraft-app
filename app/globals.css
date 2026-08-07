@@ -169,34 +169,50 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
   .prow{grid-template-columns:1.4fr .8fr 1fr auto;font-size:13px}
   .prow span:nth-child(3),.prow span:nth-child(5){display:none}
   .draft-bar{position:static}
-  .squad-pick-team,.squad-pick-salary{display:none}
 }
 
 /* squad preview / captain picks */
-.squad-preview{margin-bottom:22px}
 .squad-preview-hint{font-size:13px;color:var(--muted);margin:-10px 0 18px}
-.squad-pos-group{margin-bottom:16px}
-.squad-pos-group:last-child{margin-bottom:0}
-.squad-pos-label{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-bright);
-  background:rgba(124,92,255,.12);padding:4px 10px;border-radius:999px;margin-bottom:10px}
-.squad-pos-players{display:flex;flex-direction:column;gap:8px}
-.squad-pick{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
-.squad-pick-name{color:#fff;font-weight:600;font-size:14px}
-.squad-pick-team{color:var(--muted);font-size:12.5px;flex:1}
-.squad-pick-roles{display:flex;gap:6px;flex:none}
 .role-pick{width:32px;height:28px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);
   font-size:11.5px;font-weight:800;cursor:pointer;transition:all .2s var(--ease)}
 .role-pick:hover{border-color:var(--gold);color:var(--gold-bright)}
 .role-pick.active{background:linear-gradient(135deg,var(--gold-bright),var(--gold));border-color:transparent;color:var(--bg)}
 .role-pick.vc.active{background:linear-gradient(135deg,var(--violet-bright),var(--violet));color:#fff}
-
-.squad-pick-static{gap:10px}
-.squad-pick-salary{color:var(--amber);font-weight:700;font-size:13px;flex:none}
-.squad-pick-pts{color:var(--lime-bright);font-weight:800;font-size:13.5px;flex:none;min-width:64px;text-align:right}
 .pts-x2{color:var(--gold-bright);font-size:11px;font-weight:700;margin-left:4px}
-.role-badge-static{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;flex:none}
-.role-badge-static.c{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--bg)}
-.role-badge-static.vc{background:rgba(124,92,255,.18);color:var(--violet-bright)}
+
+/* formation board (sport-agnostic "pitch" style squad layout) */
+.formation-panel{margin-bottom:22px}
+.formation-board{position:relative;border-radius:16px;padding:26px 20px 10px;
+  background:radial-gradient(ellipse at top,rgba(61,220,151,.08),transparent 60%),
+    repeating-linear-gradient(180deg,rgba(255,255,255,.025) 0 1px,transparent 1px 64px),
+    linear-gradient(180deg,var(--bg-alt),var(--bg))}
+.formation-tier{margin-bottom:22px}
+.formation-tier:last-child{margin-bottom:6px}
+.formation-tier-label{display:block;width:fit-content;margin:0 auto 14px;font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--lime-bright);background:rgba(61,220,151,.12);border:1px solid rgba(61,220,151,.3);
+  padding:4px 12px;border-radius:999px}
+.formation-tier-players{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+.player-card{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;width:128px;
+  background:linear-gradient(160deg,var(--bg-card),rgba(24,24,40,.7));border:1px solid var(--line);border-radius:14px;
+  padding:16px 10px 12px;transition:transform .25s var(--ease),border-color .25s var(--ease)}
+.player-card:hover{transform:translateY(-3px);border-color:rgba(227,179,65,.35)}
+.player-card-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-sora),sans-serif;font-weight:800;font-size:15px;color:#fff;margin-bottom:10px;
+  background:linear-gradient(135deg,var(--violet-bright),var(--violet-deep));box-shadow:0 8px 18px -8px rgba(124,92,255,.6)}
+.player-card-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px}
+.player-card-badge.c{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--bg)}
+.player-card-badge.vc{background:rgba(124,92,255,.85);color:#fff}
+.player-card-name{color:#fff;font-weight:700;font-size:13px;line-height:1.25}
+.player-card-team{color:var(--muted);font-size:11px;margin-top:2px}
+.player-card-salary{color:var(--amber);font-weight:700;font-size:12px;margin-top:8px}
+.player-card-pts{color:var(--lime-bright);font-weight:800;font-size:13px;margin-top:8px}
+.player-card-pts .pts-x2{margin-left:3px}
+.player-card-roles{display:flex;gap:6px;margin-top:10px}
+
+@media(max-width:600px){
+  .player-card{width:104px;padding:12px 6px 10px}
+  .player-card-avatar{width:40px;height:40px;font-size:13px}
+}
 
 /* auth pages */
 .auth-sec{min-height:calc(100vh - 76px);display:flex;align-items:center}

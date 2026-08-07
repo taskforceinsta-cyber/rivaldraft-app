@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useActionState } from "react";
 import { submitEntry } from "@/lib/actions";
-import { salaryFmt } from "@/lib/format";
+import { salaryFmt, initials } from "@/lib/format";
 import CrownIcon from "@/components/CrownIcon";
 
 type PlayerData = {
@@ -130,7 +130,7 @@ export default function DraftBuilder({
       </div>
 
       {selectedPlayers.length > 0 && (
-        <div className="squad-preview card">
+        <div className="formation-panel card">
           <div className="panel-head">
             <CrownIcon size={14} className="kc-crown" />
             <span>Your squad — set captain &amp; vice-captain</span>
@@ -138,35 +138,43 @@ export default function DraftBuilder({
           <p className="squad-preview-hint">
             Captain scores 2&times; points. Pick both before locking in.
           </p>
-          {squadByPosition.map(([position, group]) => (
-            <div className="squad-pos-group" key={position}>
-              <span className="squad-pos-label">{position}</span>
-              <div className="squad-pos-players">
-                {group.map((p) => (
-                  <div className="squad-pick" key={p.id}>
-                    <span className="squad-pick-name">{p.name}</span>
-                    <span className="squad-pick-team">{p.team}</span>
-                    <div className="squad-pick-roles">
-                      <button
-                        type="button"
-                        className={`role-pick ${captainId === p.id ? "active" : ""}`}
-                        onClick={() => pickCaptain(p.id)}
-                      >
-                        C
-                      </button>
-                      <button
-                        type="button"
-                        className={`role-pick vc ${viceCaptainId === p.id ? "active" : ""}`}
-                        onClick={() => pickViceCaptain(p.id)}
-                      >
-                        VC
-                      </button>
+          <div className="formation-board">
+            {squadByPosition.map(([position, group]) => (
+              <div className="formation-tier" key={position}>
+                <span className="formation-tier-label">{position}</span>
+                <div className="formation-tier-players">
+                  {group.map((p) => (
+                    <div className="player-card" key={p.id}>
+                      <div className="player-card-avatar">{initials(p.name)}</div>
+                      {captainId === p.id && <span className="player-card-badge c">C</span>}
+                      {viceCaptainId === p.id && (
+                        <span className="player-card-badge vc">VC</span>
+                      )}
+                      <span className="player-card-name">{p.name}</span>
+                      <span className="player-card-team">{p.team}</span>
+                      <span className="player-card-salary">{salaryFmt(p.salary)}</span>
+                      <div className="player-card-roles">
+                        <button
+                          type="button"
+                          className={`role-pick ${captainId === p.id ? "active" : ""}`}
+                          onClick={() => pickCaptain(p.id)}
+                        >
+                          C
+                        </button>
+                        <button
+                          type="button"
+                          className={`role-pick vc ${viceCaptainId === p.id ? "active" : ""}`}
+                          onClick={() => pickViceCaptain(p.id)}
+                        >
+                          VC
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 

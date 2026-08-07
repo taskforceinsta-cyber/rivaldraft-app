@@ -10,6 +10,11 @@ export function salaryFmt(amount: number): string {
   return amount.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
+export function initials(name: string): string {
+  const parts = name.split(/[\s.]+/).filter(Boolean);
+  return parts.map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+}
+
 export function relativeStart(date: Date): string {
   const diffMs = date.getTime() - Date.now();
   const diffH = Math.round(diffMs / 3600000);
