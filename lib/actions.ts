@@ -18,9 +18,20 @@ export async function submitEntry(formData: FormData) {
   const leagueId = String(formData.get("leagueId") || "");
   const squadName = String(formData.get("squadName") || "").trim() || "My Squad";
   const playerIds = formData.getAll("playerId").map(String);
+  const captainId = String(formData.get("captainId") || "");
+  const viceCaptainId = String(formData.get("viceCaptainId") || "");
 
   if (playerIds.length !== SQUAD_SIZE) {
     return { error: `Pick exactly ${SQUAD_SIZE} players.` };
+  }
+  if (!captainId || !viceCaptainId) {
+    return { error: "Pick a captain and a vice-captain." };
+  }
+  if (captainId === viceCaptainId) {
+    return { error: "Captain and vice-captain must be different players." };
+  }
+  if (!playerIds.includes(captainId) || !playerIds.includes(viceCaptainId)) {
+    return { error: "Captain and vice-captain must be part of your squad." };
   }
 
   const league = await prisma.league.findUnique({ where: { id: leagueId } });
@@ -57,7 +68,13 @@ export async function submitEntry(formData: FormData) {
         userId: session.user.id,
         leagueId,
         squadName,
-        players: { create: playerIds.map((playerId) => ({ playerId })) },
+        players: {
+          create: playerIds.map((playerId) => ({
+            playerId,
+            isCaptain: playerId === captainId,
+            isViceCaptain: playerId === viceCaptainId,
+          })),
+        },
       },
     });
 
@@ -185,7 +202,10 @@ export async function simulateGameweek(formData: FormData): Promise<void> {
 
   await prisma.$transaction([
     ...league.entries.map((entry) => {
-      const total = entry.players.reduce((sum, ep) => sum + (pointsById.get(ep.playerId) ?? 0), 0);
+      const total = entry.players.reduce((sum, ep) => {
+        const pts = pointsById.get(ep.playerId) ?? 0;
+        return sum + (ep.isCaptain ? pts * 2 : pts);
+      }, 0);
       return prisma.entry.update({ where: { id: entry.id }, data: { totalPoints: total } });
     }),
     prisma.league.update({

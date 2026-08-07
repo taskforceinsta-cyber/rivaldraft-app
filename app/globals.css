@@ -169,7 +169,34 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
   .prow{grid-template-columns:1.4fr .8fr 1fr auto;font-size:13px}
   .prow span:nth-child(3),.prow span:nth-child(5){display:none}
   .draft-bar{position:static}
+  .squad-pick-team,.squad-pick-salary{display:none}
 }
+
+/* squad preview / captain picks */
+.squad-preview{margin-bottom:22px}
+.squad-preview-hint{font-size:13px;color:var(--muted);margin:-10px 0 18px}
+.squad-pos-group{margin-bottom:16px}
+.squad-pos-group:last-child{margin-bottom:0}
+.squad-pos-label{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-bright);
+  background:rgba(124,92,255,.12);padding:4px 10px;border-radius:999px;margin-bottom:10px}
+.squad-pos-players{display:flex;flex-direction:column;gap:8px}
+.squad-pick{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.squad-pick-name{color:#fff;font-weight:600;font-size:14px}
+.squad-pick-team{color:var(--muted);font-size:12.5px;flex:1}
+.squad-pick-roles{display:flex;gap:6px;flex:none}
+.role-pick{width:32px;height:28px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-size:11.5px;font-weight:800;cursor:pointer;transition:all .2s var(--ease)}
+.role-pick:hover{border-color:var(--gold);color:var(--gold-bright)}
+.role-pick.active{background:linear-gradient(135deg,var(--gold-bright),var(--gold));border-color:transparent;color:var(--bg)}
+.role-pick.vc.active{background:linear-gradient(135deg,var(--violet-bright),var(--violet));color:#fff}
+
+.squad-pick-static{gap:10px}
+.squad-pick-salary{color:var(--amber);font-weight:700;font-size:13px;flex:none}
+.squad-pick-pts{color:var(--lime-bright);font-weight:800;font-size:13.5px;flex:none;min-width:64px;text-align:right}
+.pts-x2{color:var(--gold-bright);font-size:11px;font-weight:700;margin-left:4px}
+.role-badge-static{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;flex:none}
+.role-badge-static.c{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--bg)}
+.role-badge-static.vc{background:rgba(124,92,255,.18);color:var(--violet-bright)}
 
 /* auth pages */
 .auth-sec{min-height:calc(100vh - 76px);display:flex;align-items:center}
