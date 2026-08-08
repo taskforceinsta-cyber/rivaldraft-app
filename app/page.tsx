@@ -4,21 +4,25 @@ import { prisma } from "@/lib/prisma";
 import AppNav from "@/components/AppNav";
 import Logo from "@/components/Logo";
 import CrownIcon from "@/components/CrownIcon";
+import JerseyIcon from "@/components/JerseyIcon";
 import LeagueGrid, { LeagueCardData } from "@/components/LeagueGrid";
+import { salaryFmt } from "@/lib/format";
+import { teamColor } from "@/lib/team-color";
 
 export default async function Home() {
   const session = await auth();
 
-  const [leagues, sports, playerCount, leagueCount] = await Promise.all([
+  const [leagues, topPlayers, playerCount, leagueCount] = await Promise.all([
     prisma.league.findMany({
-      where: { status: { in: ["UPCOMING", "LIVE"] } },
+      where: { status: { in: ["UPCOMING", "LIVE"] }, sport: { name: "Football" } },
       include: { sport: true, entries: true },
       orderBy: { startAt: "asc" },
       take: 6,
     }),
-    prisma.sport.findMany({
-      include: { _count: { select: { leaguePlayers: true } } },
-      orderBy: { name: "asc" },
+    prisma.player.findMany({
+      where: { sport: { name: "Football" } },
+      orderBy: { projPoints: "desc" },
+      take: 7,
     }),
     prisma.player.count(),
     prisma.league.count(),
@@ -46,7 +50,7 @@ export default async function Home() {
         <div className="wrap hero-in">
           <div className="hero-copy">
             <span className="eyebrow gold">
-              <CrownIcon size={13} /> Season-long fantasy · Every sport
+              <CrownIcon size={13} /> Season-long fantasy football
             </span>
             <h1>
               Build a dynasty.
@@ -54,9 +58,8 @@ export default async function Home() {
               <span className="hl">Rule the table.</span>
             </h1>
             <p className="hero-lead">
-              Draft real players under a salary cap, battle rival managers gameweek by
-              gameweek, and climb to the top of the table. Five sports live today, more
-              on the way — one platform, one crown.
+              Draft real Premier League footballers under a salary cap, name your captain,
+              battle rival managers gameweek by gameweek, and climb to the top of the table.
             </p>
             <div className="hero-ctas">
               <Link href={session ? "/leagues" : "/signup"} className="btn btn-primary btn-lg">
@@ -124,16 +127,16 @@ export default async function Home() {
         <div className="wrap">
           <div className="stat-strip">
             <div className="stat-item">
-              <span className="stat-val">{sports.length}</span>
-              <span className="stat-lbl">Sports live</span>
-            </div>
-            <div className="stat-item">
               <span className="stat-val">{playerCount}+</span>
-              <span className="stat-lbl">Players to draft</span>
+              <span className="stat-lbl">Footballers to draft</span>
             </div>
             <div className="stat-item">
               <span className="stat-val">{leagueCount}</span>
               <span className="stat-lbl">Open leagues</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-val">2&times;</span>
+              <span className="stat-lbl">Captain points</span>
             </div>
             <div className="stat-item">
               <span className="stat-val">$10K</span>
@@ -143,29 +146,28 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="sec sports-strip">
+      <section className="sec player-ticker-strip">
         <div className="wrap">
           <div className="sec-head center">
-            <span className="eyebrow">Built to grow</span>
-            <h2>One table, every sport.</h2>
+            <span className="eyebrow">Top picks this gameweek</span>
+            <h2>The players everyone&rsquo;s drafting.</h2>
             <p className="lead">
-              Same platform, same crown to chase — the game underneath adapts to whatever
-              you draft for.
+              Highest projected scorers across the Premier League right now — build your
+              squad around them before the price shifts.
             </p>
           </div>
-          <div className="sport-icon-grid">
-            {sports.map((s) => (
-              <div className="sport-icon-card" key={s.id}>
-                <span className="sic-emoji">{s.emoji}</span>
-                <span className="sic-name">{s.name}</span>
-                <span className="sic-count">{s._count.leaguePlayers} players</span>
+          <div className="ticker-row">
+            {topPlayers.map((p) => (
+              <div className="ticker-card" key={p.id}>
+                <div className="ticker-jersey">
+                  <JerseyIcon color={teamColor(p.team)} size={36} />
+                </div>
+                <span className="ticker-name">{p.name}</span>
+                <span className="ticker-team">{p.team}</span>
+                <span className="ticker-pos">{p.position}</span>
+                <span className="ticker-price">{salaryFmt(p.salary)}</span>
               </div>
             ))}
-            <div className="sport-icon-card sport-icon-card-next">
-              <span className="sic-emoji">+</span>
-              <span className="sic-name">More sports</span>
-              <span className="sic-count">Added by demand</span>
-            </div>
           </div>
         </div>
       </section>
@@ -173,11 +175,10 @@ export default async function Home() {
       <section className="sec leagues" id="sports">
         <div className="wrap">
           <div className="sec-head">
-            <span className="eyebrow violet">Pick your game</span>
-            <h2>Every sport. One table.</h2>
+            <span className="eyebrow violet">Pick your league</span>
+            <h2>Every gameweek, a new table.</h2>
             <p className="lead">
-              Jump into a public league or start a private one with friends — across every sport
-              we run.
+              Jump into a public league or start a private one with friends.
             </p>
           </div>
           <LeagueGrid leagues={leagueCards} />
@@ -279,7 +280,7 @@ export default async function Home() {
             </details>
             <details className="faq-item">
               <summary>
-                Will more sports be added?
+                What&rsquo;s a captain and vice-captain?
                 <svg
                   className="chev"
                   viewBox="0 0 24 24"
@@ -291,9 +292,8 @@ export default async function Home() {
                 </svg>
               </summary>
               <p>
-                The platform is built sport-agnostic from the ground up, so adding a new sport
-                is a content update, not a rebuild. Football, basketball, esports, cricket, and
-                motorsport are live today.
+                Pick one player as captain and their points count double for the gameweek. Your
+                vice-captain steps in as backup if the captain doesn&rsquo;t play.
               </p>
             </details>
           </div>

@@ -4,6 +4,7 @@ import LeagueGrid, { LeagueCardData } from "@/components/LeagueGrid";
 
 export default async function LeaguesPage() {
   const leagues = await prisma.league.findMany({
+    where: { sport: { name: "Football" } },
     include: { sport: true, entries: true },
     orderBy: { startAt: "asc" },
   });
@@ -28,7 +29,7 @@ export default async function LeaguesPage() {
           <div className="sec-head">
             <span className="eyebrow violet">All leagues</span>
             <h1>Pick a league to join.</h1>
-            <p className="lead">Every open league across every sport we run.</p>
+            <p className="lead">Every open football league we run.</p>
           </div>
           <LeagueGrid leagues={leagueCards} />
         </div>

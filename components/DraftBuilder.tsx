@@ -2,8 +2,10 @@
 
 import { useMemo, useState, useActionState } from "react";
 import { submitEntry } from "@/lib/actions";
-import { salaryFmt, initials } from "@/lib/format";
+import { salaryFmt } from "@/lib/format";
+import { teamColor, sortByPosition } from "@/lib/team-color";
 import CrownIcon from "@/components/CrownIcon";
+import JerseyIcon from "@/components/JerseyIcon";
 
 type PlayerData = {
   id: string;
@@ -56,7 +58,7 @@ export default function DraftBuilder({
       list.push(p);
       groups.set(p.position, list);
     }
-    return Array.from(groups.entries());
+    return sortByPosition(Array.from(groups.entries()));
   }, [selectedPlayers]);
 
   function toggle(id: string, salary: number) {
@@ -139,13 +141,17 @@ export default function DraftBuilder({
             Captain scores 2&times; points. Pick both before locking in.
           </p>
           <div className="formation-board">
+            <div className="formation-goalbox top" />
+            <div className="formation-goalbox bottom" />
             {squadByPosition.map(([position, group]) => (
               <div className="formation-tier" key={position}>
                 <span className="formation-tier-label">{position}</span>
                 <div className="formation-tier-players">
                   {group.map((p) => (
                     <div className="player-card" key={p.id}>
-                      <div className="player-card-avatar">{initials(p.name)}</div>
+                      <div className="player-card-avatar">
+                        <JerseyIcon color={teamColor(p.team)} size={40} />
+                      </div>
                       {captainId === p.id && <span className="player-card-badge c">C</span>}
                       {viceCaptainId === p.id && (
                         <span className="player-card-badge vc">VC</span>

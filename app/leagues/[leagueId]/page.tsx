@@ -4,7 +4,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import AppNav from "@/components/AppNav";
 import CrownIcon from "@/components/CrownIcon";
-import { money, salaryFmt, relativeStart, initials } from "@/lib/format";
+import JerseyIcon from "@/components/JerseyIcon";
+import { money, salaryFmt, relativeStart } from "@/lib/format";
+import { teamColor, sortByPosition } from "@/lib/team-color";
 
 export default async function LeagueLeaderboardPage({
   params,
@@ -34,13 +36,15 @@ export default async function LeagueLeaderboardPage({
     : undefined;
 
   const squadByPosition = myEntry
-    ? Array.from(
-        myEntry.players.reduce((groups, ep) => {
-          const list = groups.get(ep.player.position) ?? [];
-          list.push(ep);
-          groups.set(ep.player.position, list);
-          return groups;
-        }, new Map<string, typeof myEntry.players>())
+    ? sortByPosition(
+        Array.from(
+          myEntry.players.reduce((groups, ep) => {
+            const list = groups.get(ep.player.position) ?? [];
+            list.push(ep);
+            groups.set(ep.player.position, list);
+            return groups;
+          }, new Map<string, typeof myEntry.players>())
+        )
       )
     : [];
 
@@ -115,6 +119,8 @@ export default async function LeagueLeaderboardPage({
                 <span>Your squad — {myEntry.squadName}</span>
               </div>
               <div className="formation-board">
+                <div className="formation-goalbox top" />
+                <div className="formation-goalbox bottom" />
                 {squadByPosition.map(([position, group]) => (
                   <div className="formation-tier" key={position}>
                     <span className="formation-tier-label">{position}</span>
@@ -125,7 +131,9 @@ export default async function LeagueLeaderboardPage({
                           : ep.player.livePoints;
                         return (
                           <div className="player-card" key={ep.id}>
-                            <div className="player-card-avatar">{initials(ep.player.name)}</div>
+                            <div className="player-card-avatar">
+                              <JerseyIcon color={teamColor(ep.player.team)} size={40} />
+                            </div>
                             {ep.isCaptain && <span className="player-card-badge c">C</span>}
                             {ep.isViceCaptain && (
                               <span className="player-card-badge vc">VC</span>
