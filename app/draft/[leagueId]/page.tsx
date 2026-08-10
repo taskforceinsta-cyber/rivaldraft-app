@@ -43,6 +43,16 @@ export default async function DraftPage({
             </p>
           </div>
 
+          {!user && (
+            <div className="form-error" style={{ marginBottom: 24 }}>
+              Your session is out of date — please{" "}
+              <a href="/login" style={{ textDecoration: "underline" }}>
+                log out and log back in
+              </a>{" "}
+              before drafting a squad.
+            </div>
+          )}
+
           {existingEntry ? (
             <div className="card draft-done">
               <h3>You&rsquo;re already in this league</h3>

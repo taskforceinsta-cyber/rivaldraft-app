@@ -60,7 +60,7 @@ https://<your-app>.onrender.com/api/seed?secret=<your SEED_SECRET value>
 ```
 
 Either way, this creates:
-- 5 sports (~40 players across them)
+- Football (~14 players)
 - 5 leagues
 - Test player: `testaccount@fantasykings88.test`
 - Test player (second): `testaccount-player2@fantasykings88.test`
@@ -75,3 +75,10 @@ Either way, this creates:
 - To move off SQLite later (e.g. for multi-instance scaling), swap the
   Prisma datasource provider to `postgresql`, point `DATABASE_URL` at a
   hosted Postgres instance, and re-run `prisma migrate deploy`.
+- **On Free tier (no disk), log out after every redeploy.** The database
+  resets on redeploy/restart, but login sessions are JWT-based and don't
+  get invalidated — a browser that was logged in before the redeploy will
+  keep presenting a session for a user ID that no longer exists in the
+  fresh database. The app handles this gracefully (clear "log back in"
+  messaging instead of a crash), but the fix is always: log out, log back
+  in. This resets for every tester every time you redeploy on Free tier.

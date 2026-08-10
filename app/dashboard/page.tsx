@@ -26,7 +26,7 @@ export default async function DashboardPage() {
         <div className="wrap">
           <div className="sec-head">
             <span className="eyebrow">Welcome back</span>
-            <h1>Hi, {user?.name?.split(" ")[0]}.</h1>
+            <h1>Hi, {user?.name?.split(" ")[0] ?? "there"}.</h1>
             <p className="lead">Here&rsquo;s where your squads and wallet stand right now.</p>
           </div>
 

@@ -52,7 +52,7 @@ export async function submitEntry(formData: FormData) {
   }
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (!user) return { error: "User not found." };
+  if (!user) return { error: "Your session is out of date. Please log out and log back in." };
   if (user.walletCents < league.entryFeeCents) {
     return { error: "Insufficient wallet balance. Top up in your Wallet." };
   }
@@ -111,7 +111,7 @@ export async function requestWithdrawal(formData: FormData) {
   }
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (!user) return { error: "User not found." };
+  if (!user) return { error: "Your session is out of date. Please log out and log back in." };
   if (amountCents > user.walletCents) return { error: "Amount exceeds your wallet balance." };
 
   await prisma.transaction.create({
@@ -232,6 +232,9 @@ export async function requestDeposit(formData: FormData) {
   if (amountCents > 5_000_000) {
     return { error: "Max test top-up is $50,000 at a time." };
   }
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user) return { error: "Your session is out of date. Please log out and log back in." };
 
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
