@@ -35,6 +35,49 @@ export async function seedDatabase(prisma: PrismaClient) {
     });
   }
 
+  const OPPONENTS = [
+    "Newcastle", "Aston Villa", "Brighton", "West Ham", "Tottenham",
+    "Man Utd", "Everton", "Wolves", "Fulham", "Brentford",
+  ];
+
+  function hashStr(s: string): number {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function seededRandom(seed: number) {
+    let t = seed;
+    return function () {
+      t = (t + 0x6d2b79f5) | 0;
+      let r = Math.imul(t ^ (t >>> 15), 1 | t);
+      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function buildGameLogs(p: { name: string; apps: number; goals: number; assists: number; ppg: number }) {
+    const rand = seededRandom(hashStr(p.name));
+    const goalRate = p.goals / Math.max(p.apps, 1);
+    const assistRate = p.assists / Math.max(p.apps, 1);
+    const now = new Date();
+    const logs = [];
+    for (let gw = 5; gw >= 1; gw--) {
+      const scored = rand() < goalRate * 1.3;
+      const goals = scored ? (rand() < 0.15 ? 2 : 1) : 0;
+      const assists = rand() < assistRate * 1.3 ? 1 : 0;
+      const minutes = rand() < 0.85 ? 90 : Math.round(45 + rand() * 40);
+      const variance = (rand() - 0.5) * p.ppg * 0.7;
+      let points = p.ppg + variance + goals * 3 + assists * 1.5;
+      points = Math.max(0, Math.round(points * 10) / 10);
+      const opponent = OPPONENTS[Math.floor(rand() * OPPONENTS.length)];
+      const playedAt = new Date(now);
+      playedAt.setDate(playedAt.getDate() - (6 - gw) * 7);
+      logs.push({ gameweek: gw, opponent, points, goals, assists, minutes, playedAt });
+    }
+    return logs;
+  }
+
   const footballPlayers = [
     { name: "M. Salah", team: "Liverpool", position: "FWD", salary: 12500, proj: 9.8, apps: 22, goals: 15, assists: 8, shotAcc: 48, ppg: 8.9 },
     { name: "E. Haaland", team: "Man City", position: "FWD", salary: 13000, proj: 10.4, apps: 20, goals: 19, assists: 3, shotAcc: 61, ppg: 9.6 },
@@ -80,11 +123,14 @@ export async function seedDatabase(prisma: PrismaClient) {
         shotAccuracy: p.shotAcc,
         pointsPerGame: p.ppg,
       };
-      if (existing) {
-        await prisma.player.update({ where: { id: existing.id }, data });
-      } else {
-        await prisma.player.create({ data: { name: p.name, sportId, livePoints: 0, ...data } });
-      }
+      const player = existing
+        ? await prisma.player.update({ where: { id: existing.id }, data })
+        : await prisma.player.create({ data: { name: p.name, sportId, livePoints: 0, ...data } });
+
+      await prisma.playerGameLog.deleteMany({ where: { playerId: player.id } });
+      await prisma.playerGameLog.createMany({
+        data: buildGameLogs(p).map((g) => ({ ...g, playerId: player.id })),
+      });
     }
   }
 

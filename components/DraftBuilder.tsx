@@ -5,7 +5,8 @@ import { submitEntry } from "@/lib/actions";
 import { salaryFmt } from "@/lib/format";
 import { teamColor, sortByPosition } from "@/lib/team-color";
 import CrownIcon from "@/components/CrownIcon";
-import JerseyIcon from "@/components/JerseyIcon";
+import JerseyStatsButton from "@/components/JerseyStatsButton";
+import type { GameLogEntry } from "@/components/PlayerStatsModal";
 
 type PlayerData = {
   id: string;
@@ -19,6 +20,7 @@ type PlayerData = {
   assists: number;
   shotAccuracy: number;
   pointsPerGame: number;
+  gameLogs: GameLogEntry[];
 };
 
 const SQUAD_SIZE = 5;
@@ -155,9 +157,21 @@ export default function DraftBuilder({
                 <div className="formation-tier-players">
                   {group.map((p) => (
                     <div className="player-card" key={p.id}>
-                      <div className="player-card-avatar">
-                        <JerseyIcon color={teamColor(p.team)} size={40} />
-                      </div>
+                      <JerseyStatsButton
+                        color={teamColor(p.team)}
+                        player={{
+                          name: p.name,
+                          team: p.team,
+                          position: p.position,
+                          salary: p.salary,
+                          appearances: p.appearances,
+                          goals: p.goals,
+                          assists: p.assists,
+                          shotAccuracy: p.shotAccuracy,
+                          pointsPerGame: p.pointsPerGame,
+                          gameLogs: p.gameLogs,
+                        }}
+                      />
                       {captainId === p.id && <span className="player-card-badge c">C</span>}
                       {viceCaptainId === p.id && (
                         <span className="player-card-badge vc">VC</span>

@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import AppNav from "@/components/AppNav";
 import CrownIcon from "@/components/CrownIcon";
-import JerseyIcon from "@/components/JerseyIcon";
+import JerseyStatsButton from "@/components/JerseyStatsButton";
 import { money, salaryFmt, relativeStart } from "@/lib/format";
 import { teamColor, sortByPosition } from "@/lib/team-color";
 import { postLeagueMessage } from "@/lib/actions";
@@ -25,7 +25,16 @@ export default async function LeagueLeaderboardPage({
     include: {
       sport: true,
       entries: {
-        include: { user: true, players: { include: { player: true } } },
+        include: {
+          user: true,
+          players: {
+            include: {
+              player: {
+                include: { gameLogs: { orderBy: { gameweek: "desc" }, take: 5 } },
+              },
+            },
+          },
+        },
         orderBy: { totalPoints: "desc" },
       },
       messages: {
@@ -85,7 +94,24 @@ export default async function LeagueLeaderboardPage({
             </Link>
           )}
 
-          <div className="board-panel card">
+          {myEntry && (
+            <div className="league-quicknav">
+              <a href="#standings" className="stab">
+                Standings
+              </a>
+              <a href="#chat" className="stab chat-nav-link">
+                💬 League chat
+                {league.messages.length > 0 && (
+                  <span className="chat-count">{league.messages.length}</span>
+                )}
+              </a>
+              <a href="#squad" className="stab">
+                Your squad
+              </a>
+            </div>
+          )}
+
+          <div className="board-panel card" id="standings">
             <div className="panel-head">
               <span>Standings</span>
             </div>
@@ -119,54 +145,9 @@ export default async function LeagueLeaderboardPage({
           </div>
 
           {myEntry && (
-            <div className="card formation-panel" style={{ marginTop: 24 }}>
+            <div className="card chat-panel" style={{ marginTop: 24 }} id="chat">
               <div className="panel-head">
-                <CrownIcon size={14} className="kc-crown" />
-                <span>Your squad — {myEntry.squadName}</span>
-              </div>
-              <div className="formation-board">
-                <div className="formation-goalbox top" />
-                <div className="formation-goalbox bottom" />
-                {squadByPosition.map(([position, group]) => (
-                  <div className="formation-tier" key={position}>
-                    <span className="formation-tier-label">{position}</span>
-                    <div className="formation-tier-players">
-                      {group.map((ep) => {
-                        const effectivePts = ep.isCaptain
-                          ? ep.player.livePoints * 2
-                          : ep.player.livePoints;
-                        return (
-                          <div className="player-card" key={ep.id}>
-                            <div className="player-card-avatar">
-                              <JerseyIcon color={teamColor(ep.player.team)} size={40} />
-                            </div>
-                            {ep.isCaptain && <span className="player-card-badge c">C</span>}
-                            {ep.isViceCaptain && (
-                              <span className="player-card-badge vc">VC</span>
-                            )}
-                            <span className="player-card-name">{ep.player.name}</span>
-                            <span className="player-card-team">{ep.player.team}</span>
-                            <span className="player-card-salary">
-                              {salaryFmt(ep.player.salary)}
-                            </span>
-                            <span className="player-card-pts">
-                              {effectivePts.toFixed(1)}
-                              {ep.isCaptain && <span className="pts-x2">&times;2</span>}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {myEntry && (
-            <div className="card chat-panel" style={{ marginTop: 24 }}>
-              <div className="panel-head">
-                <span>League chat — the pot</span>
+                <span>💬 League chat — the pot</span>
                 <span className="chat-count">{league.messages.length}</span>
               </div>
               <div className="chat-list">
@@ -206,6 +187,63 @@ export default async function LeagueLeaderboardPage({
                   Send
                 </button>
               </form>
+            </div>
+          )}
+
+          {myEntry && (
+            <div className="card formation-panel" style={{ marginTop: 24 }} id="squad">
+              <div className="panel-head">
+                <CrownIcon size={14} className="kc-crown" />
+                <span>Your squad — {myEntry.squadName}</span>
+              </div>
+              <div className="formation-board">
+                <div className="formation-goalbox top" />
+                <div className="formation-goalbox bottom" />
+                {squadByPosition.map(([position, group]) => (
+                  <div className="formation-tier" key={position}>
+                    <span className="formation-tier-label">{position}</span>
+                    <div className="formation-tier-players">
+                      {group.map((ep) => {
+                        const effectivePts = ep.isCaptain
+                          ? ep.player.livePoints * 2
+                          : ep.player.livePoints;
+                        return (
+                          <div className="player-card" key={ep.id}>
+                            <JerseyStatsButton
+                              color={teamColor(ep.player.team)}
+                              player={{
+                                name: ep.player.name,
+                                team: ep.player.team,
+                                position: ep.player.position,
+                                salary: ep.player.salary,
+                                appearances: ep.player.appearances,
+                                goals: ep.player.goals,
+                                assists: ep.player.assists,
+                                shotAccuracy: ep.player.shotAccuracy,
+                                pointsPerGame: ep.player.pointsPerGame,
+                                gameLogs: ep.player.gameLogs,
+                              }}
+                            />
+                            {ep.isCaptain && <span className="player-card-badge c">C</span>}
+                            {ep.isViceCaptain && (
+                              <span className="player-card-badge vc">VC</span>
+                            )}
+                            <span className="player-card-name">{ep.player.name}</span>
+                            <span className="player-card-team">{ep.player.team}</span>
+                            <span className="player-card-salary">
+                              {salaryFmt(ep.player.salary)}
+                            </span>
+                            <span className="player-card-pts">
+                              {effectivePts.toFixed(1)}
+                              {ep.isCaptain && <span className="pts-x2">&times;2</span>}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

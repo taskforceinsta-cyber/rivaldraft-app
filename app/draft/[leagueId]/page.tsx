@@ -21,7 +21,11 @@ export default async function DraftPage({
   if (!league) notFound();
 
   const [players, existingEntry, user] = await Promise.all([
-    prisma.player.findMany({ where: { sportId: league.sportId }, orderBy: { salary: "desc" } }),
+    prisma.player.findMany({
+      where: { sportId: league.sportId },
+      orderBy: { salary: "desc" },
+      include: { gameLogs: { orderBy: { gameweek: "desc" }, take: 5 } },
+    }),
     prisma.entry.findUnique({
       where: { userId_leagueId: { userId: session.user.id, leagueId } },
     }),
@@ -88,6 +92,14 @@ export default async function DraftPage({
                 assists: p.assists,
                 shotAccuracy: p.shotAccuracy,
                 pointsPerGame: p.pointsPerGame,
+                gameLogs: p.gameLogs.map((g) => ({
+                  gameweek: g.gameweek,
+                  opponent: g.opponent,
+                  points: g.points,
+                  goals: g.goals,
+                  assists: g.assists,
+                  minutes: g.minutes,
+                })),
               }))}
             />
           )}

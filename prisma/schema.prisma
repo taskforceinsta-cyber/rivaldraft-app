@@ -102,6 +102,20 @@ model Player {
   sport         Sport   @relation(fields: [sportId], references: [id])
 
   entryPlayers EntryPlayer[]
+  gameLogs     PlayerGameLog[]
+}
+
+model PlayerGameLog {
+  id       String   @id @default(cuid())
+  playerId String
+  player   Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  gameweek Int
+  opponent String
+  points   Float
+  goals    Int      @default(0)
+  assists  Int      @default(0)
+  minutes  Int      @default(0)
+  playedAt DateTime
 }
 
 model Entry {
