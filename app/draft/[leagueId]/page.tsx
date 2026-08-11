@@ -83,6 +83,11 @@ export default async function DraftPage({
                 position: p.position,
                 salary: p.salary,
                 projPoints: p.projPoints,
+                appearances: p.appearances,
+                goals: p.goals,
+                assists: p.assists,
+                shotAccuracy: p.shotAccuracy,
+                pointsPerGame: p.pointsPerGame,
               }))}
             />
           )}

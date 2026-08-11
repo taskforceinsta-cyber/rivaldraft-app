@@ -6,9 +6,30 @@ import { auth, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
 const SQUAD_SIZE = 5;
+const MAX_MESSAGE_LEN = 500;
 
 export async function logoutAction() {
   await signOut({ redirectTo: "/" });
+}
+
+export async function postLeagueMessage(formData: FormData): Promise<void> {
+  const session = await auth();
+  if (!session || !session.user) redirect("/login");
+
+  const leagueId = String(formData.get("leagueId") || "");
+  const body = String(formData.get("body") || "").trim();
+  if (!body || body.length > MAX_MESSAGE_LEN) return;
+
+  const entry = await prisma.entry.findUnique({
+    where: { userId_leagueId: { userId: session.user.id, leagueId } },
+  });
+  if (!entry) return; // chat is only for managers who are actually in this league's pot
+
+  await prisma.leagueMessage.create({
+    data: { leagueId, userId: session.user.id, body },
+  });
+
+  revalidatePath(`/leagues/${leagueId}`);
 }
 
 export async function submitEntry(formData: FormData) {

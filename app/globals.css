@@ -165,6 +165,16 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
 .p-salary{color:var(--amber);font-weight:700}
 .p-proj{color:var(--lime-bright);font-weight:700}
 
+.p-name-btn{display:flex;align-items:center;gap:7px;background:none;border:none;padding:0;
+  cursor:pointer;text-align:left;font:inherit;color:inherit}
+.p-chev{display:inline-block;font-size:10px;color:var(--muted);transition:transform .2s var(--ease),color .2s var(--ease)}
+.p-chev.open{transform:rotate(90deg);color:var(--gold-bright)}
+.p-stats-panel{display:flex;flex-wrap:wrap;gap:24px;padding:14px 20px 16px 42px;
+  background:rgba(255,255,255,.025);border-bottom:1px solid var(--line)}
+.p-stat{display:flex;flex-direction:column;gap:2px}
+.p-stat-val{font-weight:800;color:#fff;font-size:14px}
+.p-stat-lbl{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
 @media(max-width:760px){
   .prow{grid-template-columns:1.4fr .8fr 1fr auto;font-size:13px}
   .prow span:nth-child(3),.prow span:nth-child(5){display:none}
@@ -388,6 +398,24 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,su
 .chg{font-size:9px;margin-left:5px}
 .chg.up{color:var(--lime)}
 .chg.down{color:var(--amber)}
+
+/* league chat */
+.chat-panel .panel-head{justify-content:space-between}
+.chat-count{background:rgba(255,255,255,.08);color:var(--text-soft);font-size:11px;font-weight:700;
+  padding:2px 9px;border-radius:999px;text-transform:none;letter-spacing:0}
+.chat-list{display:flex;flex-direction:column;gap:14px;max-height:360px;overflow-y:auto;
+  padding-right:4px;margin-bottom:18px}
+.chat-empty{color:var(--muted);font-size:13.5px;padding:8px 0}
+.chat-msg{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.chat-msg.me{background:rgba(124,92,255,.08);border-color:rgba(124,92,255,.25)}
+.chat-msg-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+.chat-msg-author{color:#fff;font-weight:700;font-size:13px}
+.chat-msg-time{color:var(--muted);font-size:11px;white-space:nowrap}
+.chat-msg-body{color:var(--text-soft);font-size:13.5px;line-height:1.5;word-break:break-word}
+.chat-form{display:flex;gap:10px;align-items:flex-end}
+.chat-form textarea{flex:1;background:var(--bg-alt);border:1px solid var(--line);border-radius:10px;
+  color:#fff;padding:10px 12px;font:inherit;font-size:13.5px;resize:vertical;min-height:44px}
+.chat-form textarea:focus{outline:none;border-color:var(--violet-bright)}
 .board-cta{width:100%}
 
 @media(max-width:760px){

@@ -7,6 +7,7 @@ import CrownIcon from "@/components/CrownIcon";
 import JerseyIcon from "@/components/JerseyIcon";
 import { money, salaryFmt, relativeStart } from "@/lib/format";
 import { teamColor, sortByPosition } from "@/lib/team-color";
+import { postLeagueMessage } from "@/lib/actions";
 
 export default async function LeagueLeaderboardPage({
   params,
@@ -26,6 +27,11 @@ export default async function LeagueLeaderboardPage({
       entries: {
         include: { user: true, players: { include: { player: true } } },
         orderBy: { totalPoints: "desc" },
+      },
+      messages: {
+        include: { user: true },
+        orderBy: { createdAt: "asc" },
+        take: 200,
       },
     },
   });
@@ -154,6 +160,52 @@ export default async function LeagueLeaderboardPage({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {myEntry && (
+            <div className="card chat-panel" style={{ marginTop: 24 }}>
+              <div className="panel-head">
+                <span>League chat — the pot</span>
+                <span className="chat-count">{league.messages.length}</span>
+              </div>
+              <div className="chat-list">
+                {league.messages.length === 0 && (
+                  <div className="chat-empty">No messages yet — say hello to your rivals.</div>
+                )}
+                {league.messages.map((m) => {
+                  const isMe = session?.user && m.userId === session.user.id;
+                  return (
+                    <div className={`chat-msg ${isMe ? "me" : ""}`} key={m.id}>
+                      <div className="chat-msg-head">
+                        <span className="chat-msg-author">{isMe ? "You" : m.user.name}</span>
+                        <span className="chat-msg-time">
+                          {m.createdAt.toLocaleString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <p className="chat-msg-body">{m.body}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <form action={postLeagueMessage} className="chat-form">
+                <input type="hidden" name="leagueId" value={league.id} />
+                <textarea
+                  name="body"
+                  placeholder="Talk trash, plan your comeback…"
+                  maxLength={500}
+                  rows={2}
+                  required
+                />
+                <button type="submit" className="btn btn-primary btn-sm">
+                  Send
+                </button>
+              </form>
             </div>
           )}
         </div>

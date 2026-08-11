@@ -14,6 +14,11 @@ type PlayerData = {
   position: string;
   salary: number;
   projPoints: number;
+  appearances: number;
+  goals: number;
+  assists: number;
+  shotAccuracy: number;
+  pointsPerGame: number;
 };
 
 const SQUAD_SIZE = 5;
@@ -50,6 +55,7 @@ export default function DraftBuilder({
   );
   const [posFilter, setPosFilter] = useState("ALL");
   const visible = posFilter === "ALL" ? players : players.filter((p) => p.position === posFilter);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const squadByPosition = useMemo(() => {
     const groups = new Map<string, PlayerData[]>();
@@ -216,21 +222,58 @@ export default function DraftBuilder({
         {visible.map((p) => {
           const isSelected = selected.has(p.id);
           const disabled = !isSelected && selected.size >= SQUAD_SIZE;
+          const isExpanded = expandedId === p.id;
           return (
-            <div className={`prow ${isSelected ? "picked" : ""}`} key={p.id}>
-              <span className="p-name">{p.name}</span>
-              <span className="p-muted">{p.team}</span>
-              <span className="p-muted">{p.position}</span>
-              <span className="p-salary">{salaryFmt(p.salary)}</span>
-              <span className="p-proj">{p.projPoints.toFixed(1)}</span>
-              <button
-                type="button"
-                className={`btn btn-sm ${isSelected ? "btn-danger" : "btn-ghost-light"}`}
-                onClick={() => toggle(p.id, p.salary)}
-                disabled={disabled}
-              >
-                {isSelected ? "Remove" : "Add"}
-              </button>
+            <div key={p.id}>
+              <div className={`prow ${isSelected ? "picked" : ""}`}>
+                <button
+                  type="button"
+                  className="p-name-btn"
+                  onClick={() => setExpandedId(isExpanded ? null : p.id)}
+                  aria-expanded={isExpanded}
+                >
+                  <span className={`p-chev ${isExpanded ? "open" : ""}`}>&#9656;</span>
+                  <span className="p-name">{p.name}</span>
+                </button>
+                <span className="p-muted">{p.team}</span>
+                <span className="p-muted">{p.position}</span>
+                <span className="p-salary">{salaryFmt(p.salary)}</span>
+                <span className="p-proj">{p.projPoints.toFixed(1)}</span>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${isSelected ? "btn-danger" : "btn-ghost-light"}`}
+                  onClick={() => toggle(p.id, p.salary)}
+                  disabled={disabled}
+                >
+                  {isSelected ? "Remove" : "Add"}
+                </button>
+              </div>
+              {isExpanded && (
+                <div className="p-stats-panel">
+                  <div className="p-stat">
+                    <span className="p-stat-val">{p.appearances}</span>
+                    <span className="p-stat-lbl">Apps</span>
+                  </div>
+                  <div className="p-stat">
+                    <span className="p-stat-val">{p.goals}</span>
+                    <span className="p-stat-lbl">Goals</span>
+                  </div>
+                  <div className="p-stat">
+                    <span className="p-stat-val">{p.assists}</span>
+                    <span className="p-stat-lbl">Assists</span>
+                  </div>
+                  <div className="p-stat">
+                    <span className="p-stat-val">
+                      {p.position === "GK" ? "—" : `${p.shotAccuracy.toFixed(0)}%`}
+                    </span>
+                    <span className="p-stat-lbl">Shot acc.</span>
+                  </div>
+                  <div className="p-stat">
+                    <span className="p-stat-val">{p.pointsPerGame.toFixed(1)}</span>
+                    <span className="p-stat-lbl">Pts / game</span>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}

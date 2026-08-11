@@ -47,6 +47,7 @@ model User {
 
   entries       Entry[]
   transactions  Transaction[]
+  messages      LeagueMessage[]
 }
 
 model Sport {
@@ -71,18 +72,34 @@ model League {
   createdAt     DateTime     @default(now())
 
   entries       Entry[]
+  messages      LeagueMessage[]
+}
+
+model LeagueMessage {
+  id        String   @id @default(cuid())
+  leagueId  String
+  league    League   @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
 }
 
 model Player {
-  id           String  @id @default(cuid())
-  name         String
-  team         String
-  position     String
-  salary       Int
-  projPoints   Float   @default(0)
-  livePoints   Float   @default(0)
-  sportId      String
-  sport        Sport   @relation(fields: [sportId], references: [id])
+  id            String  @id @default(cuid())
+  name          String
+  team          String
+  position      String
+  salary        Int
+  projPoints    Float   @default(0)
+  livePoints    Float   @default(0)
+  appearances   Int     @default(0)
+  goals         Int     @default(0)
+  assists       Int     @default(0)
+  shotAccuracy  Float   @default(0) // percentage, 0-100
+  pointsPerGame Float   @default(0) // season-average fantasy points
+  sportId       String
+  sport         Sport   @relation(fields: [sportId], references: [id])
 
   entryPlayers EntryPlayer[]
 }
